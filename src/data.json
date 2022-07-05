@@ -1,0 +1,20 @@
+[
+    {
+      "id": 1,
+      "fullName": "Jenny Chan",
+      "email": "jenny.chan@email.com",
+      "designation": "Solutions Engineer"
+    },
+    {
+      "id": 2,
+      "fullName": "Jessica warren",
+      "email": "jessica.warren@email.com",
+      "designation": "Data Engineer"
+    },
+    {
+      "id": 3,
+      "fullName": "Tony Frank",
+      "email": "tony.frank@email.com",
+      "designation": "Associate Solutions Engineer"
+    }
+  ]
