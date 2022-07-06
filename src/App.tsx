@@ -5,34 +5,41 @@ import data from "./data.json";
 import ReadOnlyRow from "./Components/ReadOnlyRow";
 import EditableRow from "./Components/EditableRow";
 import { TableContainer, Paper, Table ,TableRow, TableCell,Button, TableHead, TableBody} from "@mui/material";
+import Contact from './Model/Contact'
+
 
 const App = () => {
 
-  const [contacts, setContacts] = useState(data);
-  const [addFormData, setAddFormData] = useState({
+  const [contacts, setContacts] = useState<Contact[]>(data);
+
+  const [addFormData, setAddFormData] = useState<Contact>({
+    id: "",
     fullName: "",
     email: "",
     designation: "",
   });
 
-  const [editFormData, setEditFormData] = useState({
+  const [editFormData, setEditFormData] = useState<Contact>({
+    id:"",
     fullName: "",
     email: "",
     designation: "",
   });
 
-  const [editContactId, setEditContactId] = useState(null);
+  const [editContactId, setEditContactId] = useState<string | null>(null);
 
   const handleAddFormChange = (event:ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-
+   
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
+   if (fieldName) {
 
-    const newFormData = { ...addFormData };
-    newFormData[fieldName] = fieldValue;
-
-    setAddFormData(newFormData);
+     const newFormData:any = { ...addFormData };
+     newFormData[fieldName] = fieldValue;
+ 
+     setAddFormData(newFormData);
+   }
   };
 
   const handleEditFormChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -40,17 +47,19 @@ const App = () => {
 
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
+    if (fieldName) {
 
-    const newFormData = { ...editFormData };
-    newFormData[fieldName] = fieldValue;
-
-    setEditFormData(newFormData);
-  };
+     const newFormData:any = { ...editFormData };
+     newFormData[fieldName] = fieldValue;
+ 
+     setEditFormData(newFormData);
+   };
+   }
 
   const handleAddFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const newContact = {
+    const newContact:Contact = {
       id: nanoid(),
       fullName: addFormData.fullName,
       email: addFormData.email,
@@ -63,8 +72,9 @@ const App = () => {
 
   const handleEditFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+  if (editContactId) {
 
-    const editedContact = {
+    const editedContact:Contact = {
       id: editContactId,
       fullName: editFormData.fullName,
       email: editFormData.email,
@@ -79,13 +89,15 @@ const App = () => {
 
     setContacts(newContacts);
     setEditContactId(null);
+  }
   };
 
-  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, contact) => {
+  const handleEditClick = (event: React.MouseEvent, contact:Contact) => {
     event.preventDefault();
     setEditContactId(contact.id);
 
     const formValues = {
+      id: contact.id,
       fullName: contact.fullName,
       email: contact.email,
       designation: contact.designation
@@ -98,15 +110,16 @@ const App = () => {
     setEditContactId(null);
   };
 
-  const handleDeleteClick = (contactId:number) => {
+  const handleDeleteClick =  (event: React.MouseEvent,contactId:Contact) => {
     const newContacts = [...contacts];
 
-    const index = contacts.findIndex((contact) => contact.id === contactId);
 
-    newContacts.splice(index, 1);
-
-    setContacts(newContacts);
-  };
+     const index = contacts.findIndex((contact) => contact.id === contactId.id);
+ 
+     newContacts.splice(index, 1);
+ 
+     setContacts(newContacts);
+   };
 
   return (
     <div className="app-container">

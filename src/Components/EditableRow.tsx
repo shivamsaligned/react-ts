@@ -1,15 +1,19 @@
 import { Button, TableCell, TableRow } from "@mui/material";
 import CancelIcon from '@mui/icons-material/Delete';
+import Contact from '../Model/Contact'
 
-type ButtonProps = {
-  handleEditFormChange: () => string
+import { ChangeEvent } from "react";
+interface Props {
+  editFormData:Contact;
+  handleEditFormChange:( (event: ChangeEvent<HTMLInputElement>) => void);
+  handleCancelClick:( () => void);
 }
 
 const EditableRow = ({
   editFormData,
   handleEditFormChange,
   handleCancelClick,
-}) => {
+}:Props) => {
   return (
     <TableRow>
       <TableCell>
