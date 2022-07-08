@@ -1,25 +1,25 @@
 import { Button, TableCell, TableRow } from "@mui/material";
-import CancelIcon from '@mui/icons-material/Delete';
-import Contact from '../Model/Contact'
-
+import CancelIcon from "@mui/icons-material/Delete";
+import Contact from "../Model/Contact";
 import { ChangeEvent } from "react";
+
 interface Props {
-  editFormData:Contact;
-  handleEditFormChange:( (event: ChangeEvent<HTMLInputElement>) => void);
-  handleCancelClick:( () => void);
+  editFormData: Contact;
+  handleEditFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  handleCancelClick: () => void;
 }
 
 const EditableRow = ({
   editFormData,
   handleEditFormChange,
   handleCancelClick,
-}:Props) => {
+}: Props) => {
   return (
     <TableRow>
       <TableCell>
         <input
           type="text"
-          placeholder="Enter a name..."
+          placeholder="Enter your fullname..."
           name="fullName"
           value={editFormData.fullName}
           onChange={handleEditFormChange}
@@ -28,7 +28,7 @@ const EditableRow = ({
       <TableCell>
         <input
           type="email"
-          placeholder="Enter an email..."
+          placeholder="Enter youremail..."
           name="email"
           value={editFormData.email}
           onChange={handleEditFormChange}
@@ -44,11 +44,13 @@ const EditableRow = ({
         ></input>
       </TableCell>
       <TableCell>
-      <Button size="small" variant="contained" type="submit">Save</Button>
-        </TableCell>
-        <TableCell>
+        <Button size="small" variant="contained" type="submit">
+          Save
+        </Button>
+      </TableCell>
+      <TableCell>
         <CancelIcon onClick={handleCancelClick} />
-        </TableCell>
+      </TableCell>
     </TableRow>
   );
 };
