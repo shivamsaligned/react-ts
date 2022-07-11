@@ -52,3 +52,16 @@ body {
   width: 100%;
 }
 
+h4 {
+   margin-left: 30rem;
+}
+
+input {
+  margin: 5px;
+}
+
+input:first-child {
+  margin-left: 20px;
+}
+
+

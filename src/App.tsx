@@ -6,10 +6,21 @@ import ReadOnlyRow from "./Components/ReadOnlyRow";
 import EditableRow from "./Components/EditableRow";
 import { TableContainer, Paper, Table ,TableRow, TableCell,Button, TableHead, TableBody} from "@mui/material";
 import Contact from './Model/Contact'
+import axios from 'axios'
 
+type getContactsResponse = {
+  data: Contact[];
+}
 
 const App = () => {
 
+  const getContacts = () => {
+    axios.get('http://localhost:2000/contacts')
+    .then(res => {
+      console.log(res.data.content);
+    }).catch
+  }
+  
   const [contacts, setContacts] = useState<Contact[]>(data);
 
   const [addFormData, setAddFormData] = useState<Contact>({
@@ -106,14 +117,13 @@ const App = () => {
     setEditFormData(formValues);
   };
 
+
   const handleCancelClick = () => {
     setEditContactId(null);
   };
 
   const handleDeleteClick =  (event: React.MouseEvent,contactId:Contact) => {
     const newContacts = [...contacts];
-
-
      const index = contacts.findIndex((contact) => contact.id === contactId.id);
  
      newContacts.splice(index, 1);
@@ -123,11 +133,32 @@ const App = () => {
 
   return (
     <div className="app-container">
+      <form onSubmit={handleAddFormSubmit}>
+        <input
+          type="text"
+          name="fullName"
+          placeholder="Enter a name..."
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter an email..."
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="text"
+          name="designation"
+          placeholder="Enter designation..."
+          onChange={handleAddFormChange}
+        />
+        <Button size="small" variant="contained" type="submit">Add</Button>
+      </form>
       <form onSubmit={handleEditFormSubmit}>
         <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
-            ALIGNED AUTOMATION
+            <h4>ALIGNED AUTOMATION</h4>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
@@ -157,29 +188,6 @@ const App = () => {
           </TableBody>
           </Table>
         </TableContainer>
-      </form>
-
-      <h2>Add a Employee</h2>
-      <form onSubmit={handleAddFormSubmit}>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Enter a name..."
-          onChange={handleAddFormChange}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter an email..."
-          onChange={handleAddFormChange}
-        />
-        <input
-          type="text"
-          name="designation"
-          placeholder="Enter designation..."
-          onChange={handleAddFormChange}
-        />
-        <Button size="small" variant="contained" type="submit">Add</Button>
       </form>
     </div>
   );
