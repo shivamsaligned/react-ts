@@ -15,25 +15,27 @@ import {
   Table,
   TableRow,
   TableCell,
-  Button,
   TableHead,
   TableBody,
+  TablePagination,
 } from "@mui/material";
 import Contact from "./Model/Contact";
 import axios from "axios";
 import ContactService from "./Service/ContactService";
+import Bar from "./Components/Bar";
+import CreateContact from "./Components/CreateContact";
 
-
-const service = new ContactService()
+const service = new ContactService();
 
 const App = () => {
   useEffect(() => {
     getContacts();
   }, []);
 
+  // API
   const getContacts = async () => {
     try {
-      const data = await service.getContact()
+      const data = await service.getContact();
       setContacts(data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -46,9 +48,9 @@ const App = () => {
     }
   };
 
-  const postContacts = async (Contact:Contact) => {
+  const postContacts = async (Contact: Contact) => {
     try {
-      const data = await service.postContact(Contact)
+      const data = await service.postContact(Contact);
       console.log(data, "Error during post");
       setAddFormData(data);
     } catch (err) {
@@ -64,7 +66,7 @@ const App = () => {
 
   const putContacts = async (Contact: Contact) => {
     try {
-      const data = await service.putContact(Contact)
+      const data = await service.putContact(Contact);
       setEditFormData(data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -79,7 +81,7 @@ const App = () => {
 
   const deleteContact = async (Contact: Contact) => {
     try {
-      let del = await service.deleteContact(Contact)
+      let del = await service.deleteContact(Contact);
       console.log(del, "error during deletion");
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -91,6 +93,10 @@ const App = () => {
       }
     }
   };
+
+  // States
+  const [page, setPage] = useState(2);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [addFormData, setAddFormData] = useState<Contact>({
@@ -108,6 +114,21 @@ const App = () => {
   });
 
   const [editContactId, setEditContactId] = useState<string | null>(null);
+
+  // Events
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 3));
+    setPage(0);
+  };
 
   const handleAddFormChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -170,9 +191,9 @@ const App = () => {
     };
 
     const newContacts = [...contacts, newContact];
-    postContacts(newContact)
+    postContacts(newContact);
     setContacts(newContacts);
-  }
+  };
 
   const handleEditFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -217,10 +238,7 @@ const App = () => {
 
   const handleDeleteClick = (event: React.MouseEvent, contactId: Contact) => {
     const newContacts = [...contacts];
-    const index = contacts.findIndex(
-      (contact) => contact.id === contactId.id
-    );
-
+    const index = contacts.findIndex((contact) => contact.id === contactId.id);
     newContacts.splice(index, 1);
     deleteContact(contactId);
     setContacts(newContacts);
@@ -229,38 +247,18 @@ const App = () => {
   return (
     <div className="app-container">
       <form onSubmit={handleAddFormSubmit}>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Enter a name..."
-          onChange={handleAddFormChange}
+        <Bar />
+        <CreateContact
+        handleAddFormChange = {handleAddFormChange}
         />
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter an email..."
-          onChange={handleAddFormChange}
-        />
-        <input
-          type="text"
-          name="designation"
-          placeholder="Enter designation..."
-          onChange={handleAddFormChange}
-        />
-        <Button
-          variant="contained"
-          type="submit"
-        >
-          Add
-        </Button>
       </form>
       <form onSubmit={handleEditFormSubmit}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Paper sx={{ width: "100%" }} />
+        <TableContainer sx={{ maxHeight: 450 }}>
+          <Table stickyHeader sx={{ minWidth: 500 }} aria-label="sticky table">
             <TableHead>
-              <h4>ALIGNED AUTOMATION</h4>
               <TableRow>
-                <TableCell>Name</TableCell>
+                <TableCell>FullName</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Designation</TableCell>
                 <TableCell>Edit</TableCell>
@@ -288,6 +286,15 @@ const App = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+          rowsPerPageOptions={[5,10, 25, 100]}
+            component="div"
+            count={5}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </TableContainer>
       </form>
     </div>

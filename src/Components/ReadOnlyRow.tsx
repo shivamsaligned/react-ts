@@ -16,7 +16,7 @@ const ReadOnlyRow = ({ contact, handleEditClick, handleDeleteClick }:Props) => {
       <TableCell>{contact.email}</TableCell>
       <TableCell>{contact.designation}</TableCell>
       <TableCell>
-      <EditIcon onClick={(event) => handleEditClick(event, contact)} />
+      <EditIcon onClick={(event) => handleEditClick(event,contact)} />
       </TableCell>
       <TableCell>
       <DeleteIcon onClick={(event) => handleDeleteClick(event,contact)} />

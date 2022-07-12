@@ -10,14 +10,11 @@
 body {
   margin: 0%;
   padding: 0%;
+  color: red;
 }
 
-.header .inputContainer {
-  display: flex;
-  flex-direction: column;
-}
 
-.header input {
+.header Input {
   width: 200px;
   height: 40px;
   border: none;
@@ -56,11 +53,12 @@ h4 {
    margin-left: 30rem;
 }
 
-input {
+Input {
   margin: 5px;
+  padding: 1px;
 }
 
-input:first-child {
+Input:first-child {
   margin-left: 20px;
 }
 

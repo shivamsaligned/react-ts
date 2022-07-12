@@ -1,4 +1,4 @@
-import { Button, TableCell, TableRow } from "@mui/material";
+import { Button, Input, TableCell, TableRow } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Delete";
 import Contact from "../Model/Contact";
 import { ChangeEvent } from "react";
@@ -19,31 +19,33 @@ const EditableRow = ({
   return (
     <TableRow>
       <TableCell>
-        <input
+        <Input
           type="text"
           placeholder="Enter your fullname..."
           name="fullName"
+          autoComplete="off"
           value={editFormData.fullName}
-          onChange={handleEditFormChange}
-        ></input>
+          onChange={handleEditFormChange} />
       </TableCell>
       <TableCell>
-        <input
+        <Input
           type="email"
           placeholder="Enter youremail..."
           name="email"
+          autoComplete="off"
           value={editFormData.email}
           onChange={handleEditFormChange}
-        ></input>
+        />
       </TableCell>
       <TableCell>
-        <input
+        <Input
           type="text"
           placeholder="Enter your Designation"
           name="designation"
+          autoComplete="off"
           value={editFormData.designation}
           onChange={handleEditFormChange}
-        ></input>
+        />
       </TableCell>
       <TableCell>
         <Button variant="contained" type="submit" onClick={handleSaveClick}>
