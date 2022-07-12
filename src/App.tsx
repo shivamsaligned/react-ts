@@ -1,62 +1,98 @@
-import React, { useState, Fragment, ChangeEvent, FormEvent, useEffect } from "react";
+import React, {
+  useState,
+  Fragment,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+} from "react";
 import { nanoid } from "nanoid";
 import "./App.css";
 import ReadOnlyRow from "./Components/ReadOnlyRow";
 import EditableRow from "./Components/EditableRow";
-import { TableContainer, Paper, Table, TableRow, TableCell, Button, TableHead, TableBody } from "@mui/material";
-import Contact from './Model/Contact'
-import axios from 'axios'
-// import Contactservice from './Service/Contactservice'
+import {
+  TableContainer,
+  Paper,
+  Table,
+  TableRow,
+  TableCell,
+  Button,
+  TableHead,
+  TableBody,
+} from "@mui/material";
+import Contact from "./Model/Contact";
+import axios from "axios";
+import ContactService from "./Service/ContactService";
+
+
+const service = new ContactService()
 
 const App = () => {
-  useEffect( () => {
-    const getContacts = async () => {
-      try {
-        const { data} = await axios.get(
-          'http://localhost:2000/contacts',
-          {
-            headers: {
-              Accept: 'application/json',
-            },
-          },
-        );
-        console.log(data, 'Getting Data');
-  
-        setContacts(data)
-      }
-      catch (err) {
-        if (axios.isAxiosError(err)) {
-          console.log('error message:', err.message);
-          return err.message
-        } else {
-          console.log('unexpected error:', err);
-          return 'An unexpected error occured'
-        }
-      }
-    }
-    getContacts()
-},[])
+  useEffect(() => {
+    getContacts();
+  }, []);
 
-  const postContacts = async() => {
+  const getContacts = async () => {
     try {
-      // const poscontacts = {id: "",firstName: "",email:"", designation: ""}
-     await axios.post('http://localhost:2000/contacts')
-     .then()
-    }
-    catch(err) {
+      const data = await service.getContact()
+      setContacts(data);
+    } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log('error message:', err.message);
-        return err.message
+        console.log("error message:", err.message);
+        return err.message;
       } else {
-        console.log('unexpected error:', err);
-        return 'An unexpected error occured'
+        console.log("unexpected error during fecthing:", err);
+        return "An unexpected error occured";
       }
     }
-  }
-  postContacts()
+  };
+
+  const postContacts = async (Contact:Contact) => {
+    try {
+      const data = await service.postContact(Contact)
+      console.log(data, "Error during post");
+      setAddFormData(data);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.log("error message:", err.message);
+        return err.message;
+      } else {
+        console.log("unexpected error during post:", err);
+        return "An unexpected error occured";
+      }
+    }
+  };
+
+  const putContacts = async (Contact: Contact) => {
+    try {
+      const data = await service.putContact(Contact)
+      setEditFormData(data);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.log("error message:", err.message);
+        return err.message;
+      } else {
+        console.log("unexpected error during updating:", err);
+        return "An unexpected error occured";
+      }
+    }
+  };
+
+  const deleteContact = async (Contact: Contact) => {
+    try {
+      let del = await service.deleteContact(Contact)
+      console.log(del, "error during deletion");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.log("error message:", err.message);
+        return err.message;
+      } else {
+        console.log("unexpected error during deleting:", err);
+        return "An unexpected error occured";
+      }
+    }
+  };
 
   const [contacts, setContacts] = useState<Contact[]>([]);
-
   const [addFormData, setAddFormData] = useState<Contact>({
     id: "",
     fullName: "",
@@ -79,7 +115,6 @@ const App = () => {
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
     if (fieldName) {
-       
       const newFormData: any = { ...addFormData };
       newFormData[fieldName] = fieldValue;
 
@@ -93,13 +128,36 @@ const App = () => {
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
     if (fieldName) {
-
       const newFormData: any = { ...editFormData };
       newFormData[fieldName] = fieldValue;
 
       setEditFormData(newFormData);
-    };
-  }
+    }
+  };
+
+  const handleSaveClick = () => {
+    console.log(editContactId);
+
+    if (editContactId) {
+      const editedContact: Contact = {
+        id: editContactId,
+        fullName: editFormData.fullName,
+        email: editFormData.email,
+        designation: editFormData.designation,
+      };
+      const newContacts = [...contacts];
+
+      const index = contacts.findIndex(
+        (contact) => contact.id === editContactId
+      );
+
+      newContacts[index] = editedContact;
+
+      setContacts(newContacts);
+      putContacts(editedContact);
+      setEditContactId(null);
+    }
+  };
 
   const handleAddFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -112,23 +170,25 @@ const App = () => {
     };
 
     const newContacts = [...contacts, newContact];
+    postContacts(newContact)
     setContacts(newContacts);
-  };
+  }
 
   const handleEditFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (editContactId) {
-
       const editedContact: Contact = {
         id: editContactId,
         fullName: editFormData.fullName,
         email: editFormData.email,
-        designation: editFormData.designation
+        designation: editFormData.designation,
       };
 
       const newContacts = [...contacts];
 
-      const index = contacts.findIndex((contact) => contact.id === editContactId);
+      const index = contacts.findIndex(
+        (contact) => contact.id === editContactId
+      );
 
       newContacts[index] = editedContact;
 
@@ -145,12 +205,11 @@ const App = () => {
       id: contact.id,
       fullName: contact.fullName,
       email: contact.email,
-      designation: contact.designation
+      designation: contact.designation,
     };
 
     setEditFormData(formValues);
   };
-
 
   const handleCancelClick = () => {
     setEditContactId(null);
@@ -158,10 +217,12 @@ const App = () => {
 
   const handleDeleteClick = (event: React.MouseEvent, contactId: Contact) => {
     const newContacts = [...contacts];
-    const index = contacts.findIndex((contact) => contact.id === contactId.id);
+    const index = contacts.findIndex(
+      (contact) => contact.id === contactId.id
+    );
 
     newContacts.splice(index, 1);
-
+    deleteContact(contactId);
     setContacts(newContacts);
   };
 
@@ -186,7 +247,12 @@ const App = () => {
           placeholder="Enter designation..."
           onChange={handleAddFormChange}
         />
-        <Button size="small" variant="contained" type="submit">Add</Button>
+        <Button
+          variant="contained"
+          type="submit"
+        >
+          Add
+        </Button>
       </form>
       <form onSubmit={handleEditFormSubmit}>
         <TableContainer component={Paper}>
@@ -203,9 +269,10 @@ const App = () => {
             </TableHead>
             <TableBody>
               {contacts.map((contact) => (
-                <Fragment key ={contact.id}>
+                <Fragment key={contact.id}>
                   {editContactId === contact.id ? (
                     <EditableRow
+                      handleSaveClick={handleSaveClick}
                       editFormData={editFormData}
                       handleEditFormChange={handleEditFormChange}
                       handleCancelClick={handleCancelClick}

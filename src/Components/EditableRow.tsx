@@ -5,6 +5,7 @@ import { ChangeEvent } from "react";
 
 interface Props {
   editFormData: Contact;
+  handleSaveClick: () => void;
   handleEditFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
   handleCancelClick: () => void;
 }
@@ -12,6 +13,7 @@ interface Props {
 const EditableRow = ({
   editFormData,
   handleEditFormChange,
+  handleSaveClick,
   handleCancelClick,
 }: Props) => {
   return (
@@ -44,7 +46,7 @@ const EditableRow = ({
         ></input>
       </TableCell>
       <TableCell>
-        <Button size="small" variant="contained" type="submit">
+        <Button variant="contained" type="submit" onClick={handleSaveClick}>
           Save
         </Button>
       </TableCell>
