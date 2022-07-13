@@ -7,6 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
+import { ChangeEvent } from 'react';
+import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
+import CreateContact from './CreateContact';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -33,11 +36,20 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
+const SharpIcon = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'relative',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -50,8 +62,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Bar() {
+interface Props {
+  handleAddFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+export default function Bar({handleAddFormChange}:Props) {
+
+  const create = () => {
+    return <CreateContact handleAddFormChange={handleAddFormChange} />
+  }
   return (
+    <>
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
@@ -72,6 +93,9 @@ export default function Bar() {
           >
             Aligned Automation
           </Typography>
+          <SharpIcon>
+          <AddCircleSharpIcon />
+          </SharpIcon>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -84,7 +108,7 @@ export default function Bar() {
         </Toolbar>
       </AppBar>
     </Box>
-
+    </>
   )
 }
 

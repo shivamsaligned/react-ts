@@ -48,7 +48,14 @@ const EditableRow = ({
         />
       </TableCell>
       <TableCell>
-        <Button variant="contained" type="submit" onClick={handleSaveClick}>
+        <Button variant="contained" type="submit" onClick={() => {
+          const confirmBox = window.confirm(
+            "Do you really want to Save your Changes?"
+          )
+          if (confirmBox === true) {
+           handleSaveClick()
+          }
+        }}>
           Save
         </Button>
       </TableCell>

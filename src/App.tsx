@@ -17,12 +17,11 @@ import {
   TableCell,
   TableHead,
   TableBody,
-  TablePagination,
 } from "@mui/material";
 import Contact from "./Model/Contact";
 import axios from "axios";
 import ContactService from "./Service/ContactService";
-import Bar from "./Components/Bar";
+import NavBar from "./Components/NavBar";
 import CreateContact from "./Components/CreateContact";
 
 const service = new ContactService();
@@ -95,8 +94,6 @@ const App = () => {
   };
 
   // States
-  const [page, setPage] = useState(2);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [addFormData, setAddFormData] = useState<Contact>({
@@ -116,19 +113,6 @@ const App = () => {
   const [editContactId, setEditContactId] = useState<string | null>(null);
 
   // Events
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 3));
-    setPage(0);
-  };
 
   const handleAddFormChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -243,22 +227,16 @@ const App = () => {
     deleteContact(contactId);
     setContacts(newContacts);
   };
-
   return (
     <div className="app-container">
-      <form onSubmit={handleAddFormSubmit}>
-        <Bar />
-        <CreateContact
-        handleAddFormChange = {handleAddFormChange}
-        />
-      </form>
+      <NavBar handleAddFormChange={handleAddFormChange} />
       <form onSubmit={handleEditFormSubmit}>
         <Paper sx={{ width: "100%" }} />
         <TableContainer sx={{ maxHeight: 450 }}>
           <Table stickyHeader sx={{ minWidth: 500 }} aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <TableCell>FullName</TableCell>
+                <TableCell sortDirection = 'asc'>FullName</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Designation</TableCell>
                 <TableCell>Edit</TableCell>
@@ -286,16 +264,12 @@ const App = () => {
               ))}
             </TableBody>
           </Table>
-          <TablePagination
-          rowsPerPageOptions={[5,10, 25, 100]}
-            component="div"
-            count={5}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </TableContainer>
+      </form>
+      <form onSubmit={handleAddFormSubmit}>
+        <CreateContact
+          handleAddFormChange={handleAddFormChange}
+        />
       </form>
     </div>
   );
