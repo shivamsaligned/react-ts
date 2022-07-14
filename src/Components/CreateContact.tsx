@@ -1,20 +1,19 @@
-import { Box, Button, Grid, Input, Tab, TableCell, TableRow } from '@mui/material'
-import { ChangeEvent, FormEvent } from 'react'
+import { Button, Input, TableCell, TableRow } from '@mui/material'
+import { ChangeEvent} from 'react'
 import Contact from '../Model/Contact';
 
 interface Props {
-    handleAddFormSubmit:(event: FormEvent<HTMLFormElement>) => void;
-    handleAddFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
-    addFormData: Contact
+     handleAddFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
+     handleCancelBtnClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+     addFormData: Contact
 }
 
 export default function CreateContact(
-    {handleAddFormChange,addFormData,handleAddFormSubmit}:Props
+    {handleAddFormChange,addFormData,handleCancelBtnClick}:Props
 ) {
   return (
-        <Grid container>
-    <TableCell>
-          <Grid item>
+    <TableRow>
+      <TableCell>
         <Input
           type="text"
           name="fullName"
@@ -22,12 +21,10 @@ export default function CreateContact(
           value={addFormData.fullName}
           autoComplete="off"
           onChange={handleAddFormChange}
-          required= {true}
+          required={true}
           />
-          </Grid>
-    </TableCell>
-    <TableCell>
-        <Grid item>
+      </TableCell>
+          <TableCell>
         <Input
           type="email"
           name="email"
@@ -35,12 +32,10 @@ export default function CreateContact(
           autoComplete="off"
           value={addFormData.email}
           onChange={handleAddFormChange}
-          required= {true}
-          />
-          </Grid>
-    </TableCell>
-    <TableCell>
-          <Grid item>
+          required={true}
+          />          
+          </TableCell>
+          <TableCell>
         <Input
           type="text"
           name="designation"
@@ -48,19 +43,13 @@ export default function CreateContact(
           autoComplete="off"
           value={addFormData.designation}
           onChange={handleAddFormChange}
-          required= {true}
+          required={true}
           />
-          </Grid>
-    </TableCell>
-    <TableCell>
-          <Grid item>
-          <form onSubmit={handleAddFormSubmit}>
-            <Button size="small" variant="contained" type="submit">
-              Add
+          </TableCell>
+            <Button size="small" variant="contained" type="submit" style={{marginTop:'20px', marginRight:'1px'}}>
+              Submit
             </Button>
-          </form>
-        </Grid>
-    </TableCell>
-          </Grid>
+            <Button size='small' variant='contained' onClick={handleCancelBtnClick} style={{marginTop:'20px'}}>Cancel</Button>
+          </TableRow>
   )
 }
