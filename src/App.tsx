@@ -4,7 +4,6 @@ import React, {
   ChangeEvent,
   FormEvent,
   useEffect,
-  ChangeEventHandler,
 } from "react";
 import { nanoid } from "nanoid";
 import "./App.css";
@@ -27,17 +26,62 @@ import {
   Box,
   Grid,
   Button,
-  Input,
-  TextField,
+  Dialog
 } from "@mui/material";
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import Contact from "./Model/Contact";
 import axios from "axios";
 import ContactService from "./Service/ContactService";
 import NavBar from "./Components/NavBar";
 import CreateContact from "./Components/CreateContact";
-import { AddCircle, ImportExport } from "@mui/icons-material";
+import { ImportExport } from "@mui/icons-material";
 
 const service = new ContactService();
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginTop: '12px',
+  alignItems: 'right',
+  justifyContent: 'right',
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(1),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(3.2, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'right',
+  justifyContent: 'right',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  border: '1px solid seagreen',
+  marginTop: '5px',
+  marginRight: '1rem',
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '7ch',
+    },
+  },
+}));
 
 type SortType = {
   key: string;
@@ -45,6 +89,7 @@ type SortType = {
 }
 
 const App = () => {
+
   useEffect(() => {
     getContacts();
   }, []);
@@ -114,6 +159,8 @@ const App = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [field, setField] = useState(false)
   const [sortConfig, setSortConfig] = useState<SortType | null>(null)
+  const [open, setOpen] = useState(false)
+  const [del, setdel] = useState(false)
   const [addFormData, setAddFormData] = useState<Contact>({
     id: "",
     fullName: "",
@@ -132,18 +179,6 @@ const App = () => {
 
   const [search, setSearch] = useState('')
 
-
-  const requestSort = (key: string) => {
-    let direction = 'ascending';
-    if (sortConfig) {
-      if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-        direction = 'descending';
-      }
-    }
-    setSortConfig({ key, direction });
-    sorter()
-  }
-
   const sorter = () => {
     let sortedContacts = [...contacts];
     if (sortConfig !== null) {
@@ -161,15 +196,28 @@ const App = () => {
     return sortedContacts;
   }
 
-  const positionArrow = () => {
+  const requestSort = (key: string) => {
+    let direction = 'ascending';
     if (sortConfig) {
-      if (sortConfig.direction === 'ascending')
+      if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+        direction = 'descending';
+      }
+    }
+    setSortConfig({ key, direction });
+    sorter()
+  }
+
+  const positionArrow = (key: string) => {
+    if (sortConfig) {
+      if (sortConfig.direction === 'ascending' && sortConfig.key === key)
         return <ArrowUpwardIcon sx={{ fontSize: 'small' }} />
-      if (sortConfig.direction === 'descending')
+      if (sortConfig.direction === 'descending' && sortConfig.key === key)
         return <ArrowDownwardIcon sx={{ fontSize: 'small' }} />
     }
     return <ImportExport sx={{ fontSize: 'small' }} />
   }
+
+  const [filterResult, setFilterResult] = useState<Contact[]>([])
 
   // Events
   const searchfield = () => {
@@ -179,14 +227,20 @@ const App = () => {
         contact.email.toLowerCase().includes(search.toLowerCase()) ||
         contact.designation.toLowerCase().includes(search.toLowerCase())
     );
-    console.log(searcher);
-    setContacts(searcher)
+    if (search.length === 0) {
+      console.log(contacts, 'executing');
+      setFilterResult(contacts);
+    } else {
+      console.log(searcher, 'else');
+      setFilterResult(searcher)
+    }
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setSearch(event.target.value)
     searchfield()
   }
+
   const handleAddClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log('Clicked');
     setField(true)
@@ -308,51 +362,34 @@ const App = () => {
     newContacts.splice(index, 1);
     deleteContact(contactId);
     setContacts(newContacts);
+    setdel(true)
   };
 
-  const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginTop: '12px',
-    alignItems: 'right',
-    justifyContent: 'right',
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
-      width: 'auto',
-    },
-  }));
 
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(3.2, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'right',
-    justifyContent: 'right',
-  }));
+  const handleclick = () => {
+    setOpen(true)
+  }
 
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    border:'1px solid seagreen',
-    marginTop:'5px',
-    marginRight: '2.4px',
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '10ch',
-      },
-    },
-  }));
+  const handleclose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false)
+    setdel(false)
+  }
+
+  const action = (
+    <>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleclose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  )
   return (
     <Box className="app-container">
       <NavBar handleAddFormChange={handleAddFormChange} />
@@ -363,12 +400,27 @@ const App = () => {
               <CreateContact
                 handleCancelBtnClick={handleCancelBtnClick}
                 handleAddFormChange={handleAddFormChange}
+                handleclick={handleclick}
                 addFormData={addFormData}
               /> : null
           }
+            <Snackbar
+              open={open}
+              autoHideDuration={3000}
+              onClose={handleclose}
+              message="Successfully submitted!"
+              action={action}
+            />
+            <Snackbar
+              open={del}
+              autoHideDuration={3000}
+              onClose={handleclose}
+              message="Successfully Deleted!"
+              action={action}
+            />
           </Grid>
           <Grid item>
-            {!field ? <Button variant="contained" onClick={handleAddClick} style={{ marginTop: '1.2rem', marginLeft: '62rem' }}>Add</Button> : null}
+            {!field ? <Button variant="contained" onClick={handleAddClick} style={{ marginTop: '1.2rem', marginLeft: '63rem' }}>Add</Button> : null}
           </Grid>
           <Grid item>
             <SearchIconWrapper>
@@ -376,7 +428,7 @@ const App = () => {
             </SearchIconWrapper>
             <Search>
               <StyledInputBase placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }} type={search} value={search} onChange={handleSearch} />
+                inputProps={{ 'aria-label': 'search' }} value={search} onChange={handleSearch} />
             </Search>
           </Grid>
         </Grid>
@@ -387,15 +439,15 @@ const App = () => {
           <Table stickyHeader sx={{ minWidth: 500 }} aria-label="sticky table">
             <TableHead>
               <TableRow>
-                <TableCell onClick={() => requestSort('fullName')}>FullName {positionArrow()}</TableCell>
-                <TableCell onClick={() => requestSort('email')}>Email {positionArrow()}</TableCell>
-                <TableCell onClick={() => requestSort('designation')}> Designation {positionArrow()}</TableCell>
-                <TableCell>Edit</TableCell>
-                <TableCell>Delete</TableCell>
+                <TableCell style={{ fontWeight: 800, border: '1px solid seagreen' }} onClick={() => requestSort('fullName')}>FullName {positionArrow('fullName')}</TableCell>
+                <TableCell style={{ fontWeight: 800, border: '1px solid seagreen' }} onClick={() => requestSort('email')}>Email {positionArrow('email')}</TableCell>
+                <TableCell style={{ fontWeight: 800, border: '1px solid seagreen' }} onClick={() => requestSort('designation')}> Designation {positionArrow('designation')}</TableCell>
+                <TableCell style={{ fontWeight: 800, border: '1px solid seagreen' }}>Edit</TableCell>
+                <TableCell style={{ fontWeight: 800, border: '1px solid seagreen' }}>Delete</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {contacts.map((contact) => (
+              {search.length > 1 ? (filterResult.map((contact) => (
                 <Fragment key={contact.id}>
                   {editContactId === contact.id ? (
                     <EditableRow
@@ -412,7 +464,25 @@ const App = () => {
                     />
                   )}
                 </Fragment>
-              ))}
+              ))) :
+                (contacts.map((contact) => (
+                  <Fragment key={contact.id}>
+                    {editContactId === contact.id ? (
+                      <EditableRow
+                        handleSaveClick={handleSaveClick}
+                        editFormData={editFormData}
+                        handleEditFormChange={handleEditFormChange}
+                        handleCancelClick={handleCancelClick}
+                      />
+                    ) : (
+                      <ReadOnlyRow
+                        contact={contact}
+                        handleEditClick={handleEditClick}
+                        handleDeleteClick={handleDeleteClick}
+                      />
+                    )}
+                  </Fragment>
+                )))}
             </TableBody>
           </Table>
         </TableContainer>

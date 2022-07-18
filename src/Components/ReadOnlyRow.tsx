@@ -12,21 +12,15 @@ interface Props {
 const ReadOnlyRow = ({ contact, handleEditClick, handleDeleteClick }: Props) => {
   return (
     <TableRow>
-      <TableCell>{contact.fullName}</TableCell>
-      <TableCell>{contact.email}</TableCell>
-      <TableCell>{contact.designation}</TableCell>
-      <TableCell>
+      <TableCell style={{border: '1px solid seagreen'}}>{contact.fullName}</TableCell>
+      <TableCell style={{border: '1px solid seagreen'}}>{contact.email}</TableCell>
+      <TableCell style={{border: '1px solid seagreen'}}>{contact.designation}</TableCell>
+      <TableCell style={{border: '1px solid seagreen'}}>
         <EditIcon onClick={(event) => handleEditClick(event, contact)} />
       </TableCell>
-      <TableCell>
-        <DeleteIcon className="delete-button" onClick={(event) => {
-          const confirmBox = window.confirm(
-            "Do you really want to delete this Contact?"
-          )
-          if (confirmBox === true) {
-            handleDeleteClick(event, contact)
-          }
-        }} />
+      <TableCell style={{border: '1px solid seagreen'}}>
+        <DeleteIcon className="delete-button" onClick={(event) => { handleDeleteClick(event, contact)}
+        } />
       </TableCell>
     </TableRow>
   );

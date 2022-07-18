@@ -1,15 +1,16 @@
-import { Button, Input, TableCell, TableRow } from '@mui/material'
-import { ChangeEvent} from 'react'
+import { Button, Collapse, Input, Snackbar, TableCell, TableRow } from '@mui/material'
+import { ChangeEvent } from 'react'
 import Contact from '../Model/Contact';
 
 interface Props {
-     handleAddFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
-     handleCancelBtnClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-     addFormData: Contact
+  handleAddFormChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  handleCancelBtnClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  addFormData: Contact;
+  handleclick:() => void
 }
 
 export default function CreateContact(
-    {handleAddFormChange,addFormData,handleCancelBtnClick}:Props
+  { handleAddFormChange,handleclick, addFormData, handleCancelBtnClick }: Props
 ) {
   return (
     <TableRow>
@@ -22,9 +23,9 @@ export default function CreateContact(
           autoComplete="off"
           onChange={handleAddFormChange}
           required={true}
-          />
+        />
       </TableCell>
-          <TableCell>
+      <TableCell>
         <Input
           type="email"
           name="email"
@@ -33,9 +34,9 @@ export default function CreateContact(
           value={addFormData.email}
           onChange={handleAddFormChange}
           required={true}
-          />          
-          </TableCell>
-          <TableCell>
+        />
+      </TableCell>
+      <TableCell>
         <Input
           type="text"
           name="designation"
@@ -44,12 +45,12 @@ export default function CreateContact(
           value={addFormData.designation}
           onChange={handleAddFormChange}
           required={true}
-          />
-          </TableCell>
-            <Button size="small" variant="contained" type="submit" style={{marginTop:'20px', marginRight:'1px'}}>
-              Submit
-            </Button>
-            <Button size='small' variant='contained' onClick={handleCancelBtnClick} style={{marginTop:'20px'}}>Cancel</Button>
-          </TableRow>
+        />
+      </TableCell>
+      <Button onClick={handleclick} size="small" variant="contained" type="submit" style={{ marginTop: '20px', marginRight: '1px' }}>
+        Submit
+      </Button>
+      <Button size='small' variant='contained' onClick={handleCancelBtnClick} style={{ marginTop: '20px' }}>Cancel</Button>
+    </TableRow>
   )
 }
